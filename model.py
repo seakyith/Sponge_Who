@@ -37,57 +37,69 @@ app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///sqlite3_Sponge_Who.db'
 db=SQLAlchemy(app)
 
 
-class episodes(db.Model):# enumerations
-    """ """
+class episodes(db.Model):# Stores information regarding episodes
+    """SQLAchemy model episodes"""
     __tablename__='Episodes'
     id=db.Column(db.Integer(),primary_key=True)
     season=db.Column(db.Integer())
     episode=db.Column(db.Integer())
     minor_ep=db.Column(db.Integer())
     ep_name=db.Column(db.String())
+    ep_des=db.Column(db.String())
 
-    def __init__(self,season,episode,minor,name):
+    def __init__(self,season,episode,minor,name,description):
+        """Initialization for "episodes" sqlobject, requires(season:int,episode:int,minor:int,name:str,description:str)"""
         self.season=season
         self.episode=episode
         self.minor_ep=minor
         self.ep_name=name
+        self.ep_des=description
     def __repr__(self):
-        return '<{}:{} #{}>'.format(self.__tablename__,dir(self),self.id)
+        return '<{}:{} #{}>'.format(self.__tablename__,(self.season,self.episode,self.minor_ep,self.ep_name,self.ep_des),self.id)
 
-class quotes(db.Model):#quote holder
-    """ """
+class quotes(db.Model):# Stores information regarding character quotes
+    """SQLAlchemy model quotes"""
     __tablename__='Quotes'
     id=db.Column(db.Integer(),primary_key=True)
     ep_id=db.Column(db.Integer, db.ForeignKey('Episodes.id'),nullable=False)
     l_num=db.Column(db.Integer())
-    character=db.Column(db.Integer, db.ForeignKey('Characters.id'),nullable=False)
+    char=db.Column(db.Integer, db.ForeignKey('Characters.id'),nullable=False)
     quote=db.Column(db.String())
 
-    def __init__(self,ep_id,l_num,char,quote):
-        self.name=
+    def __init__(self,ep_id:int,l_num:int,character:int,quote:str):
+        """Initialization for "quotes" sqlobject, requires(ep_id:int,l_num:int,character:int,quote:str)"""
+        self.ep_id=ep_id
+        self.l_num=l_num
+        self.char_id=character
+        self.quote=quote
     def __repr__(self):
-        return '<{}:{} #{}>'.format(self.__tablename__,dir(self),self.id)
+        return '<{}:{} #{}>'.format(self.__tablename__,(self.l_num,self.char_id,self.quote),self.id)
 
-class characters(db.Model):# sorta enumeration, how do we handle multiple speakers?
-    """ """
+class characters(db.Model):# Stores information for characters, may require pseudoname parsing
+    """SQLAchemy model characters"""
     __tablename__='Characters'
     id=db.Column(db.Integer(),primary_key=True)
     name=db.Column(db.String(),unique=True)
 
-    def __init__(self,name):
+    def __init__(self,name:str):
+        """Initialization for "characters" sqlobject, requires(character name:str)"""
         self.name=name
     def __repr__(self):
-        return '<{}:{} #{}>'.format(self.__tablename__,dir(self),self.id)
+        return '<{}:{} #{}>'.format(self.__tablename__,self.name,self.id)
 
-class query(db.Model):
-    """ """
-    __tablename__='Querys'
+# The following models are experimental
+class user_query(db.Model):
+    """User_query"""# store information regarding queries and user feedback?
+    __tablename__='User_querys'
     id=db.Column(db.Integer(),primary_key=True)
+    query_text=db.Column(db.String())
     quote_id=db.Column(db.Integer(),db.ForeignKey('Quotes.id'),nullable=False)
     datetime=db.Column(db.DateTime())
+    accurate=db.Column(db.Boolean())
 
-    def __init__(self,name):
-        self.name=name
+    def __init__(self):
+        """Initialization for "user_query" sqlobject"""
+        pass
     def __repr__(self):
         return '<{}:{} #{}>'.format(self.__tablename__,self.name,self.id)
 
